@@ -1,6 +1,9 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
+using TMPro;
 using UnityEngine;
+using UnityEngine.PlayerLoop;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
@@ -12,13 +15,29 @@ public class MainManager : MonoBehaviour
 
     public Text ScoreText;
     public GameObject GameOverText;
+    public Text BestScore;
     
     private bool m_Started = false;
     private int m_Points;
     
     private bool m_GameOver = false;
 
-    
+    public static MainManager MainInstance;
+    private void Awake()
+    {
+        if (MainInstance != null)
+        {
+            Destroy(gameObject);
+            return;
+        }
+
+        MainInstance = this;
+
+        UIManager.Instance.LoadGame();
+        BestScore.text = $"Best Score: {UIManager.Instance.bestPlayer} : {UIManager.Instance.bestScore}";
+        //Debug.Log(BestScore.text);
+    }
+
     // Start is called before the first frame update
     void Start()
     {
@@ -70,6 +89,7 @@ public class MainManager : MonoBehaviour
 
     public void GameOver()
     {
+        UIManager.Instance.SetBestScore(m_Points);
         m_GameOver = true;
         GameOverText.SetActive(true);
     }
